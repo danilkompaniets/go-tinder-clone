@@ -1,0 +1,26 @@
+services:
+  kafka:
+    url:
+      - "localhost:29092"
+      - "localhost:29093"
+  auth:
+    grpcPort: "localhost:9000"
+    httpPort: "localhost:8000"
+    database:
+      host: "localhost"
+      port: "5432"
+      username: "myuser"
+      password: "mypassword"
+      database: "authdb"
+  users:
+    grpcPort: "localhost:9001"
+    httpPort: "localhost:8001"
+    database:
+      host: "localhost"
+      port: "5434"
+      username: "myuser"
+      password: "mypassword"
+      database: "usersdb"
+  api-gateway:
+    addr: "localhost:3000"
+
