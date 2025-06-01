@@ -30,25 +30,11 @@ func NewGRPCApp(cfg *config.Config, db *sql.DB, publisher *producer.Publisher) *
 }
 
 func (app *GRPCApplication) Run() error {
-	dbCfg := app.cfg.Services.Users.Database
-	appCfg := app.cfg.Services.Users
-
-	connStr := fmt.Sprintf("postgres://%v:%v@%v:%v/%v?sslmode=disable",
-		dbCfg.Username, dbCfg.Password, dbCfg.Host, dbCfg.Port, dbCfg.Database,
-	)
-
-	db, err := sql.Open("postgres", connStr)
-	if err != nil {
-		return fmt.Errorf("failed to connect to db: %w", err)
-	}
-
-	app.db = db
-
-	repo := sqlRepo.NewRepository(db)
+	repo := sqlRepo.NewRepository(app.db)
 	srv := service.NewUserService(repo, app.cfg, app.publisher)
 	handler := grpc2.NewGRPCHandler(*srv)
 
-	lis, err := net.Listen("tcp", appCfg.GRPCPort)
+	lis, err := net.Listen("tcp", app.cfg.Services.Users.GRPCPort)
 	if err != nil {
 		return fmt.Errorf("failed to listen on port: %w", err)
 	}
@@ -59,7 +45,7 @@ func (app *GRPCApplication) Run() error {
 	)
 	handler.RegisterGRPCHandler(app.grpcServer, handler)
 
-	fmt.Println("Starting gRPC Server on port", appCfg.GRPCPort)
+	fmt.Println("Starting gRPC Server on port", app.cfg.Services.Users.GRPCPort)
 	return app.grpcServer.Serve(lis)
 }
 

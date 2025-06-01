@@ -22,7 +22,8 @@ type RegisterResponse struct {
 }
 
 type RefreshTokenResponse struct {
-	AccessToken string `json:"accessToken"`
+	AccessToken  string `json:"accessToken"`
+	RefreshToken string `json:"refreshToken"`
 }
 
 type LoginRequest struct {

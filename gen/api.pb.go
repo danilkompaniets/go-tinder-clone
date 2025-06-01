@@ -226,6 +226,102 @@ func (*CreateUserResponse) Descriptor() ([]byte, []int) {
 	return file_api_api_proto_rawDescGZIP(), []int{2}
 }
 
+type RefreshTokenRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	RefreshToken  string                 `protobuf:"bytes,1,opt,name=refreshToken,proto3" json:"refreshToken,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *RefreshTokenRequest) Reset() {
+	*x = RefreshTokenRequest{}
+	mi := &file_api_api_proto_msgTypes[3]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *RefreshTokenRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*RefreshTokenRequest) ProtoMessage() {}
+
+func (x *RefreshTokenRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_api_api_proto_msgTypes[3]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use RefreshTokenRequest.ProtoReflect.Descriptor instead.
+func (*RefreshTokenRequest) Descriptor() ([]byte, []int) {
+	return file_api_api_proto_rawDescGZIP(), []int{3}
+}
+
+func (x *RefreshTokenRequest) GetRefreshToken() string {
+	if x != nil {
+		return x.RefreshToken
+	}
+	return ""
+}
+
+type RefreshTokenResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	AccessToken   string                 `protobuf:"bytes,1,opt,name=accessToken,proto3" json:"accessToken,omitempty"`
+	RefreshToken  string                 `protobuf:"bytes,2,opt,name=refreshToken,proto3" json:"refreshToken,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *RefreshTokenResponse) Reset() {
+	*x = RefreshTokenResponse{}
+	mi := &file_api_api_proto_msgTypes[4]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *RefreshTokenResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*RefreshTokenResponse) ProtoMessage() {}
+
+func (x *RefreshTokenResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_api_api_proto_msgTypes[4]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use RefreshTokenResponse.ProtoReflect.Descriptor instead.
+func (*RefreshTokenResponse) Descriptor() ([]byte, []int) {
+	return file_api_api_proto_rawDescGZIP(), []int{4}
+}
+
+func (x *RefreshTokenResponse) GetAccessToken() string {
+	if x != nil {
+		return x.AccessToken
+	}
+	return ""
+}
+
+func (x *RefreshTokenResponse) GetRefreshToken() string {
+	if x != nil {
+		return x.RefreshToken
+	}
+	return ""
+}
+
 var File_api_api_proto protoreflect.FileDescriptor
 
 const file_api_api_proto_rawDesc = "" +
@@ -246,9 +342,16 @@ const file_api_api_proto_rawDesc = "" +
 	"\tupdatedAt\x18\v \x01(\v2\x1a.google.protobuf.TimestampR\tupdatedAt\".\n" +
 	"\x11CreateUserRequest\x12\x19\n" +
 	"\x04user\x18\x01 \x01(\v2\x05.UserR\x04user\"\x14\n" +
-	"\x12CreateUserResponse2E\n" +
+	"\x12CreateUserResponse\"9\n" +
+	"\x13RefreshTokenRequest\x12\"\n" +
+	"\frefreshToken\x18\x01 \x01(\tR\frefreshToken\"\\\n" +
+	"\x14RefreshTokenResponse\x12 \n" +
+	"\vaccessToken\x18\x01 \x01(\tR\vaccessToken\x12\"\n" +
+	"\frefreshToken\x18\x02 \x01(\tR\frefreshToken2E\n" +
 	"\x04user\x12=\n" +
-	"\x12CreateUserFromAuth\x12\x12.CreateUserRequest\x1a\x13.CreateUserResponseB\x06Z\x04/genb\x06proto3"
+	"\x12CreateUserFromAuth\x12\x12.CreateUserRequest\x1a\x13.CreateUserResponse2C\n" +
+	"\x04auth\x12;\n" +
+	"\fRefreshToken\x12\x14.RefreshTokenRequest\x1a\x15.RefreshTokenResponseB\x06Z\x04/genb\x06proto3"
 
 var (
 	file_api_api_proto_rawDescOnce sync.Once
@@ -262,22 +365,26 @@ func file_api_api_proto_rawDescGZIP() []byte {
 	return file_api_api_proto_rawDescData
 }
 
-var file_api_api_proto_msgTypes = make([]protoimpl.MessageInfo, 3)
+var file_api_api_proto_msgTypes = make([]protoimpl.MessageInfo, 5)
 var file_api_api_proto_goTypes = []any{
 	(*User)(nil),                  // 0: User
 	(*CreateUserRequest)(nil),     // 1: CreateUserRequest
 	(*CreateUserResponse)(nil),    // 2: CreateUserResponse
-	(*timestamppb.Timestamp)(nil), // 3: google.protobuf.Timestamp
+	(*RefreshTokenRequest)(nil),   // 3: RefreshTokenRequest
+	(*RefreshTokenResponse)(nil),  // 4: RefreshTokenResponse
+	(*timestamppb.Timestamp)(nil), // 5: google.protobuf.Timestamp
 }
 var file_api_api_proto_depIdxs = []int32{
-	3, // 0: User.birthDate:type_name -> google.protobuf.Timestamp
-	3, // 1: User.createdAt:type_name -> google.protobuf.Timestamp
-	3, // 2: User.updatedAt:type_name -> google.protobuf.Timestamp
+	5, // 0: User.birthDate:type_name -> google.protobuf.Timestamp
+	5, // 1: User.createdAt:type_name -> google.protobuf.Timestamp
+	5, // 2: User.updatedAt:type_name -> google.protobuf.Timestamp
 	0, // 3: CreateUserRequest.user:type_name -> User
 	1, // 4: user.CreateUserFromAuth:input_type -> CreateUserRequest
-	2, // 5: user.CreateUserFromAuth:output_type -> CreateUserResponse
-	5, // [5:6] is the sub-list for method output_type
-	4, // [4:5] is the sub-list for method input_type
+	3, // 5: auth.RefreshToken:input_type -> RefreshTokenRequest
+	2, // 6: user.CreateUserFromAuth:output_type -> CreateUserResponse
+	4, // 7: auth.RefreshToken:output_type -> RefreshTokenResponse
+	6, // [6:8] is the sub-list for method output_type
+	4, // [4:6] is the sub-list for method input_type
 	4, // [4:4] is the sub-list for extension type_name
 	4, // [4:4] is the sub-list for extension extendee
 	0, // [0:4] is the sub-list for field type_name
@@ -294,9 +401,9 @@ func file_api_api_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_api_api_proto_rawDesc), len(file_api_api_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   3,
+			NumMessages:   5,
 			NumExtensions: 0,
-			NumServices:   1,
+			NumServices:   2,
 		},
 		GoTypes:           file_api_api_proto_goTypes,
 		DependencyIndexes: file_api_api_proto_depIdxs,

@@ -26,3 +26,16 @@ message CreateUserResponse {}
 service user {
   rpc CreateUserFromAuth (CreateUserRequest) returns (CreateUserResponse);
 }
+
+message RefreshTokenRequest {
+  string refreshToken = 1;
+}
+
+message RefreshTokenResponse {
+  string accessToken = 1;
+  string refreshToken = 2;
+}
+
+service auth {
+  rpc RefreshToken (RefreshTokenRequest) returns (RefreshTokenResponse);
+}

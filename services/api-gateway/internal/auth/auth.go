@@ -1,6 +1,7 @@
 package auth
 
 import (
+	"errors"
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v5"
 	"net/http"
@@ -30,23 +31,36 @@ func JwtMiddleware() gin.HandlerFunc {
 		}
 
 		tokenString := token[1]
-		err := ValidateToken(tokenString)
+
+		email, err := ParseToken(tokenString)
 		if err != nil {
+			c.JSON(http.StatusUnauthorized, gin.H{
+				"error": "Invalid token",
+			})
 			c.Abort()
 			return
 		}
 
+		c.Header("email", email)
 		c.Next()
 	}
 }
 
-func ValidateToken(tokenString string) error {
-	_, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
+func ParseToken(tokenString string) (string, error) {
+	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
 		return secretKey, nil
 	}, jwt.WithValidMethods([]string{jwt.SigningMethodHS256.Alg()}))
 
 	if err != nil {
-		return err
+		return "", err
 	}
-	return nil
+
+	if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
+		if email, ok := claims["email"].(string); ok {
+			return email, nil
+		}
+		return "", errors.New("email not found in token")
+	}
+
+	return "", errors.New("invalid token claims")
 }

@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/danilkompanites/tinder-clone/gen"
 	"github.com/danilkompanites/tinder-clone/internal/config"
 	"github.com/danilkompanites/tinder-clone/internal/utils/kafka"
 	"github.com/danilkompanites/tinder-clone/internal/utils/kafka/producer"
@@ -19,15 +18,13 @@ import (
 
 type Service struct {
 	repository *sql.Repository
-	userClient gen.UserClient
 	cfg        *config.Config
 	publisher  *producer.Publisher
 }
 
-func NewService(repository *sql.Repository, client gen.UserClient, cfg *config.Config, publisher *producer.Publisher) *Service {
+func NewService(repository *sql.Repository, cfg *config.Config, publisher *producer.Publisher) *Service {
 	return &Service{
 		repository: repository,
-		userClient: client,
 		cfg:        cfg,
 		publisher:  publisher,
 	}
@@ -131,13 +128,22 @@ func (s *Service) RefreshToken(ctx context.Context, req *model.RefreshTokenReque
 		return nil, errors.New("refresh token not found")
 	}
 
+	_ = s.repository.DeleteRefreshToken(ctx, req.RefreshToken)
+
+	newRefreshToken, err := utils.CreateToken(user.Email, time.Hour*24*7)
+	if err != nil {
+		return nil, err
+	}
+	_ = s.repository.InsertRefreshToken(ctx, user.ID, newRefreshToken)
+
 	newAccessToken, err := utils.CreateToken(user.Email, time.Hour*24)
 	if err != nil {
 		return nil, err
 	}
 
 	return &model.RefreshTokenResponse{
-		AccessToken: newAccessToken,
+		AccessToken:  newAccessToken,
+		RefreshToken: newRefreshToken,
 	}, nil
 }
 

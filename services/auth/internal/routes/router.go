@@ -1,4 +1,4 @@
-package app
+package routes
 
 import (
 	"github.com/danilkompanites/tinder-clone/services/auth/internal/handler/http"
