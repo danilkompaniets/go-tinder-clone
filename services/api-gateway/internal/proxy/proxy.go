@@ -14,7 +14,6 @@ func HandleReverseProxy(c *gin.Context, target *url.URL, prefix string) {
 
 	r.URL.Path = strings.TrimPrefix(r.URL.Path, prefix)
 	r.URL.RawPath = strings.TrimPrefix(r.URL.RawPath, prefix)
-
 	r.Host = target.Host
 
 	proxy.ServeHTTP(c.Writer, r)

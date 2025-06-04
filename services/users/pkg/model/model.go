@@ -28,17 +28,35 @@ type User struct {
 }
 
 type CreatePreferenceRequest struct {
-	UserId          string `json:"user_id" binding:"required"`
-	PreferredGender string `json:"preferred_gender" binding:"required"`
-	AgeMin          int    `json:"age_min" binding:"required"`
-	AgeMax          int    `json:"age_max" binding:"required"`
-	CityOnly        string `json:"city_only" binding:"required"`
+	UserId          string    `json:"user_id" binding:"required"`
+	PreferredGender string    `json:"preferred_gender" binding:"required"`
+	AgeMin          int       `json:"age_min" binding:"required"`
+	AgeMax          int       `json:"age_max" binding:"required"`
+	Position        *Position `json:"position"`
 }
 
-type UpdatePreferenceRequest struct {
-	ID              string  `json:"id"`
-	PreferredGender *string `json:"preferred_gender" binding:"required"`
-	AgeMin          *int    `json:"age_min" binding:"required"`
-	AgeMax          *int    `json:"age_max" binding:"required"`
-	CityOnly        *string `json:"city_only" binding:"required"`
+type UserPreferences struct {
+	ID              string    `json:"id"`
+	UserId          *string   `json:"user_id"`
+	PreferredGender *string   `json:"preferred_gender"`
+	AgeMin          *int      `json:"age_min"`
+	AgeMax          *int      `json:"age_max"`
+	Position        *Position `json:"position"`
+}
+
+type Position struct {
+	Lat    float64 `json:"lat"`
+	Lon    float64 `json:"lon"`
+	Radius int     `json:"radius"` // in  meters
+}
+
+type GetUsersByPreferencesRequest struct {
+	UserId          string    `json:"user_id" binding:"required"`
+	PreferredGender string    `json:"preferred_gender" binding:"required"`
+	AgeMin          int       `json:"age_min" binding:"required"`
+	AgeMax          int       `json:"age_max" binding:"required"`
+	Position        *Position `json:"position"`
+
+	Limit  int `json:"limit" binding:"required"`
+	Offset int `json:"offset" binding:"required"`
 }

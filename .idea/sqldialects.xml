@@ -3,6 +3,7 @@
   <component name="SqlDialectMappings">
     <file url="file://$PROJECT_DIR$/services/auth/migrations/001_create_users_table.sql" dialect="PostgreSQL" />
     <file url="file://$PROJECT_DIR$/services/auth/migrations/002_create_refresh_tokens_table.sql" dialect="PostgreSQL" />
+    <file url="file://$PROJECT_DIR$/services/match/migrations/001_create_match_table.sql" dialect="PostgreSQL" />
     <file url="file://$PROJECT_DIR$/services/users/migrations/001_create_users_table.sql" dialect="PostgreSQL" />
     <file url="file://$PROJECT_DIR$/services/users/migrations/002_create_user_preferences_table.sql" dialect="PostgreSQL" />
     <file url="file://$PROJECT_DIR$/services/users/migrations/003_create_users_photos_table.sql" dialect="PostgreSQL" />

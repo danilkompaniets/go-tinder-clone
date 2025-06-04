@@ -19,6 +19,8 @@ type services struct {
 	Users      serviceInfo    `yaml:"users"`
 	ApiGateway apiGatewayInfo `yaml:"api-gateway"`
 	Kafka      kafkaInfo      `yaml:"kafka"`
+	Match      serviceInfo    `yaml:"match"`
+	Deck       serviceInfo    `yaml:"deck"`
 }
 
 type apiGatewayInfo struct {

@@ -1,6 +1,7 @@
 package http
 
 import (
+	"fmt"
 	"github.com/danilkompanites/tinder-clone/services/users/internal/service"
 	"github.com/danilkompanites/tinder-clone/services/users/pkg/model"
 	"github.com/gin-gonic/gin"
@@ -47,6 +48,7 @@ func (h *Handler) UpdateUser(c *gin.Context) {
 
 func (h *Handler) GetUserByID(c *gin.Context) {
 	id := c.Param("id")
+	fmt.Println(id)
 	user, err := h.service.GetUserByID(c.Request.Context(), id)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
@@ -73,7 +75,7 @@ func (h *Handler) CreatePreference(c *gin.Context) {
 }
 
 func (h *Handler) UpdatePreference(c *gin.Context) {
-	var req model.UpdatePreferenceRequest
+	var req model.UserPreferences
 	if err := c.ShouldBindJSON(&req); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return

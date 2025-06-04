@@ -7,5 +7,7 @@ run:
 	@CONFIG_PATH=$(ENV) go run ./services/auth/cmd/main.go &
 	@CONFIG_PATH=$(ENV) go run ./services/users/cmd/main.go &
 	@CONFIG_PATH=$(ENV) go run ./services/api-gateway/cmd/main.go
+	@CONFIG_PATH=$(ENV) go run ./services/match/cmd/main.go
+
 
 .PHONY: run

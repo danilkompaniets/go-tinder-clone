@@ -19,7 +19,8 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	User_CreateUserFromAuth_FullMethodName = "/user/CreateUserFromAuth"
+	User_CreateUserFromAuth_FullMethodName       = "/user/CreateUserFromAuth"
+	User_SelectUsersByPreferences_FullMethodName = "/user/SelectUsersByPreferences"
 )
 
 // UserClient is the client API for User service.
@@ -27,6 +28,7 @@ const (
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type UserClient interface {
 	CreateUserFromAuth(ctx context.Context, in *CreateUserRequest, opts ...grpc.CallOption) (*CreateUserResponse, error)
+	SelectUsersByPreferences(ctx context.Context, in *SelectUsersByPreferencesRequest, opts ...grpc.CallOption) (*SelectUsersByPreferencesResponse, error)
 }
 
 type userClient struct {
@@ -47,11 +49,22 @@ func (c *userClient) CreateUserFromAuth(ctx context.Context, in *CreateUserReque
 	return out, nil
 }
 
+func (c *userClient) SelectUsersByPreferences(ctx context.Context, in *SelectUsersByPreferencesRequest, opts ...grpc.CallOption) (*SelectUsersByPreferencesResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(SelectUsersByPreferencesResponse)
+	err := c.cc.Invoke(ctx, User_SelectUsersByPreferences_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // UserServer is the server API for User service.
 // All implementations must embed UnimplementedUserServer
 // for forward compatibility.
 type UserServer interface {
 	CreateUserFromAuth(context.Context, *CreateUserRequest) (*CreateUserResponse, error)
+	SelectUsersByPreferences(context.Context, *SelectUsersByPreferencesRequest) (*SelectUsersByPreferencesResponse, error)
 	mustEmbedUnimplementedUserServer()
 }
 
@@ -64,6 +77,9 @@ type UnimplementedUserServer struct{}
 
 func (UnimplementedUserServer) CreateUserFromAuth(context.Context, *CreateUserRequest) (*CreateUserResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateUserFromAuth not implemented")
+}
+func (UnimplementedUserServer) SelectUsersByPreferences(context.Context, *SelectUsersByPreferencesRequest) (*SelectUsersByPreferencesResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method SelectUsersByPreferences not implemented")
 }
 func (UnimplementedUserServer) mustEmbedUnimplementedUserServer() {}
 func (UnimplementedUserServer) testEmbeddedByValue()              {}
@@ -104,6 +120,24 @@ func _User_CreateUserFromAuth_Handler(srv interface{}, ctx context.Context, dec 
 	return interceptor(ctx, in, info, handler)
 }
 
+func _User_SelectUsersByPreferences_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SelectUsersByPreferencesRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServer).SelectUsersByPreferences(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: User_SelectUsersByPreferences_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServer).SelectUsersByPreferences(ctx, req.(*SelectUsersByPreferencesRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // User_ServiceDesc is the grpc.ServiceDesc for User service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -114,6 +148,10 @@ var User_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "CreateUserFromAuth",
 			Handler:    _User_CreateUserFromAuth_Handler,
+		},
+		{
+			MethodName: "SelectUsersByPreferences",
+			Handler:    _User_SelectUsersByPreferences_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
@@ -216,6 +254,108 @@ var Auth_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "RefreshToken",
 			Handler:    _Auth_RefreshToken_Handler,
+		},
+	},
+	Streams:  []grpc.StreamDesc{},
+	Metadata: "api/api.proto",
+}
+
+const (
+	Match_GetDecisionsUserId_FullMethodName = "/match/GetDecisionsUserId"
+)
+
+// MatchClient is the client API for Match service.
+//
+// For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
+type MatchClient interface {
+	GetDecisionsUserId(ctx context.Context, in *GetDecisionsUserIdRequest, opts ...grpc.CallOption) (*GetDecisionsUserIdResponse, error)
+}
+
+type matchClient struct {
+	cc grpc.ClientConnInterface
+}
+
+func NewMatchClient(cc grpc.ClientConnInterface) MatchClient {
+	return &matchClient{cc}
+}
+
+func (c *matchClient) GetDecisionsUserId(ctx context.Context, in *GetDecisionsUserIdRequest, opts ...grpc.CallOption) (*GetDecisionsUserIdResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GetDecisionsUserIdResponse)
+	err := c.cc.Invoke(ctx, Match_GetDecisionsUserId_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+// MatchServer is the server API for Match service.
+// All implementations must embed UnimplementedMatchServer
+// for forward compatibility.
+type MatchServer interface {
+	GetDecisionsUserId(context.Context, *GetDecisionsUserIdRequest) (*GetDecisionsUserIdResponse, error)
+	mustEmbedUnimplementedMatchServer()
+}
+
+// UnimplementedMatchServer must be embedded to have
+// forward compatible implementations.
+//
+// NOTE: this should be embedded by value instead of pointer to avoid a nil
+// pointer dereference when methods are called.
+type UnimplementedMatchServer struct{}
+
+func (UnimplementedMatchServer) GetDecisionsUserId(context.Context, *GetDecisionsUserIdRequest) (*GetDecisionsUserIdResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetDecisionsUserId not implemented")
+}
+func (UnimplementedMatchServer) mustEmbedUnimplementedMatchServer() {}
+func (UnimplementedMatchServer) testEmbeddedByValue()               {}
+
+// UnsafeMatchServer may be embedded to opt out of forward compatibility for this service.
+// Use of this interface is not recommended, as added methods to MatchServer will
+// result in compilation errors.
+type UnsafeMatchServer interface {
+	mustEmbedUnimplementedMatchServer()
+}
+
+func RegisterMatchServer(s grpc.ServiceRegistrar, srv MatchServer) {
+	// If the following call pancis, it indicates UnimplementedMatchServer was
+	// embedded by pointer and is nil.  This will cause panics if an
+	// unimplemented method is ever invoked, so we test this at initialization
+	// time to prevent it from happening at runtime later due to I/O.
+	if t, ok := srv.(interface{ testEmbeddedByValue() }); ok {
+		t.testEmbeddedByValue()
+	}
+	s.RegisterService(&Match_ServiceDesc, srv)
+}
+
+func _Match_GetDecisionsUserId_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetDecisionsUserIdRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MatchServer).GetDecisionsUserId(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Match_GetDecisionsUserId_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MatchServer).GetDecisionsUserId(ctx, req.(*GetDecisionsUserIdRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+// Match_ServiceDesc is the grpc.ServiceDesc for Match service.
+// It's only intended for direct use with grpc.RegisterService,
+// and not to be introspected or modified (even as a copy)
+var Match_ServiceDesc = grpc.ServiceDesc{
+	ServiceName: "match",
+	HandlerType: (*MatchServer)(nil),
+	Methods: []grpc.MethodDesc{
+		{
+			MethodName: "GetDecisionsUserId",
+			Handler:    _Match_GetDecisionsUserId_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

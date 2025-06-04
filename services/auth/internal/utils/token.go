@@ -18,11 +18,12 @@ func getSecretKey() string {
 	return key
 }
 
-func CreateToken(email string, timeout time.Duration) (string, error) {
+func CreateToken(userId string, timeout time.Duration) (string, error) {
+
 	claims := jwt.MapClaims{
-		"email": email,
-		"exp":   time.Now().Add(timeout).Unix(),
-		"iat":   time.Now().Unix(),
+		"id":  userId,
+		"exp": time.Now().Add(timeout).Unix(),
+		"iat": time.Now().Unix(),
 	}
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 
@@ -50,10 +51,10 @@ func ParseToken(tokenString string) (string, error) {
 	}
 
 	if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
-		if email, ok := claims["email"].(string); ok {
-			return email, nil
+		if userId, ok := claims["id"].(string); ok {
+			return userId, nil
 		}
-		return "", errors.New("email not found in token")
+		return "", errors.New("id not found in token")
 	}
 
 	return "", errors.New("invalid token claims")

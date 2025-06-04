@@ -11,24 +11,30 @@ import (
 func main() {
 	cfg := config.MustLoad()
 
-	authUrl, err := url.Parse(cfg.Services.Auth.HttpPort)
-	usersUrl, err := url.Parse(cfg.Services.Users.HttpPort)
+	authUrl, err := url.Parse("http://" + cfg.Services.Auth.HttpPort + "/api/v1")
+	usersUrl, err := url.Parse("http://" + cfg.Services.Users.HttpPort + "/api/v1")
+	matchUrl, err := url.Parse("http://" + cfg.Services.Match.HttpPort + "/api/v1")
+
 	if err != nil {
 		panic(err)
 	}
 
 	r := gin.Default()
 
-	// Прокси для auth
 	r.Any("/auth/*path", func(c *gin.Context) {
 		proxy.HandleReverseProxy(c, authUrl, "/auth")
 	})
 
-	// Прокси для users
 	users := r.Group("/users")
 	users.Use(auth.JwtMiddleware())
 	users.Any("/*path", func(c *gin.Context) {
-		proxy.HandleReverseProxy(c, usersUrl, "/users")
+		proxy.HandleReverseProxy(c, usersUrl, "")
+	})
+
+	match := r.Group("/match")
+	match.Use(auth.JwtMiddleware())
+	match.Any("/*path", func(c *gin.Context) {
+		proxy.HandleReverseProxy(c, matchUrl, "/match")
 	})
 
 	err = r.Run(cfg.Services.ApiGateway.Addr)

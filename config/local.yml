@@ -4,8 +4,8 @@ services:
       - "localhost:29092"
       - "localhost:29093"
   auth:
-    grpcPort: "localhost:9000"
-    httpPort: "localhost:8000"
+    grpcPort: "localhost:9090"
+    httpPort: "localhost:8081"
     database:
       host: "localhost"
       port: "5432"
@@ -13,8 +13,8 @@ services:
       password: "mypassword"
       database: "authdb"
   users:
-    grpcPort: "localhost:9001"
-    httpPort: "localhost:8001"
+    grpcPort: "localhost:9091"
+    httpPort: "localhost:8082"
     database:
       host: "localhost"
       port: "5434"
@@ -23,4 +23,16 @@ services:
       database: "usersdb"
   api-gateway:
     addr: "localhost:3000"
-
+  match:
+    grpcPort: "localhost9092"
+    httpPort: "localhost:8083"
+    database:
+      host: "localhost"
+      port: "5436"
+      username: "myuser"
+      password: "mypassword"
+      database: "matchdb"
+  deck:
+    grpcPort: "localhost9093"
+    httpPort: "localhost:8084"
+    

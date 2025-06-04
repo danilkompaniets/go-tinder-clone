@@ -92,12 +92,12 @@ func (s *Service) LoginUser(ctx context.Context, req *model.LoginRequest) (*mode
 		return nil, errors.New("incorrect password")
 	}
 
-	accessToken, err := utils.CreateToken(dbUser.Email, time.Hour*24)
+	accessToken, err := utils.CreateToken(dbUser.ID, time.Hour*24)
 	if err != nil {
 		return nil, err
 	}
 
-	refreshToken, err := utils.CreateToken(dbUser.Email, time.Hour*24*7)
+	refreshToken, err := utils.CreateToken(dbUser.ID, time.Hour*24*7)
 	if err != nil {
 		return nil, err
 	}
@@ -130,13 +130,13 @@ func (s *Service) RefreshToken(ctx context.Context, req *model.RefreshTokenReque
 
 	_ = s.repository.DeleteRefreshToken(ctx, req.RefreshToken)
 
-	newRefreshToken, err := utils.CreateToken(user.Email, time.Hour*24*7)
+	newRefreshToken, err := utils.CreateToken(user.ID, time.Hour*24*7)
 	if err != nil {
 		return nil, err
 	}
 	_ = s.repository.InsertRefreshToken(ctx, user.ID, newRefreshToken)
 
-	newAccessToken, err := utils.CreateToken(user.Email, time.Hour*24)
+	newAccessToken, err := utils.CreateToken(user.ID, time.Hour*24)
 	if err != nil {
 		return nil, err
 	}

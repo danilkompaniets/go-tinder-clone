@@ -7,6 +7,7 @@ import (
 	"github.com/danilkompanites/tinder-clone/services/users/internal/service"
 	"github.com/danilkompanites/tinder-clone/services/users/pkg/model"
 	"google.golang.org/grpc"
+	"google.golang.org/protobuf/types/known/timestamppb"
 	"time"
 )
 
@@ -39,4 +40,35 @@ func (h *Handler) CreateUserFromAuth(ctx context.Context, req *gen.CreateUserReq
 	}
 
 	return &gen.CreateUserResponse{}, nil
+}
+
+func (h *Handler) SelectUsersByPreferences(ctx context.Context, req *gen.SelectUsersByPreferencesRequest) (*gen.SelectUsersByPreferencesResponse, error) {
+	ctx, cancel := context.WithTimeout(ctx, 3*time.Second)
+	defer cancel()
+
+	res, err := h.service.GetUsersByPreferences(ctx, model.FromProtoToGetUsersByPreferencesRequest(req))
+
+	if err != nil {
+		return nil, err
+	}
+
+	var protoRes gen.SelectUsersByPreferencesResponse
+
+	for _, user := range res {
+		protoRes.Users = append(protoRes.Users, &gen.User{
+			Id:        user.ID,
+			Username:  user.Username,
+			Email:     user.Email,
+			FirstName: *user.FirstName,
+			Bio:       *user.Bio,
+			Gender:    *user.Gender,
+			BirthDate: timestamppb.New(user.BirthDate),
+			City:      user.City,
+			AvatarUrl: user.AvatarURL,
+			CreatedAt: timestamppb.New(user.CreatedAt),
+			UpdatedAt: timestamppb.New(user.UpdatedAt),
+		})
+	}
+
+	return &protoRes, nil
 }

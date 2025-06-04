@@ -1,5 +1,7 @@
 package kafka
 
+import "github.com/danilkompanites/tinder-clone/services/users/pkg/model"
+
 type EventType string
 
 var Events = struct {
@@ -24,11 +26,11 @@ var Topics = struct {
 }
 
 type PreferencesUpdate struct {
-	ID              string  `json:"id"`
-	PreferredGender *string `json:"preferred_gender" binding:"required"`
-	AgeMin          *int    `json:"age_min" binding:"required"`
-	AgeMax          *int    `json:"age_max" binding:"required"`
-	CityOnly        *string `json:"city_only" binding:"required"`
+	ID              string          `json:"id"`
+	PreferredGender *string         `json:"preferred_gender" binding:"required"`
+	AgeMin          *int            `json:"age_min" binding:"required"`
+	AgeMax          *int            `json:"age_max" binding:"required"`
+	Position        *model.Position `json:"position" binding:"required"`
 }
 
 type ConsumerGroup string

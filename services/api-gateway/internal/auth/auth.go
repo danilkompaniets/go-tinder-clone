@@ -5,48 +5,48 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v5"
 	"net/http"
+	"os"
 	"strings"
 )
 
-var secretKey = []byte("aksjdlasdjalksdj")
+var secretKey = []byte(getSecretKey())
+
+func getSecretKey() string {
+	key := os.Getenv("JWT_SECRET")
+	if key == "" {
+		// Подходит для разработки, но в проде всегда используй переменные окружения!
+		return "change_this_in_production"
+	}
+	return key
+}
 
 func JwtMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		tokenHeader := c.GetHeader("Authorization")
-		if tokenHeader == "" {
-			c.JSON(http.StatusUnauthorized, gin.H{
-				"error": "Bearer token required for this route",
-			})
-			c.Abort()
-			return
-		}
-		token := strings.Split(tokenHeader, " ")
-
-		if token[0] != "Bearer" {
-			c.JSON(http.StatusUnauthorized, gin.H{
-				"error": "Bearer token required for this route",
-			})
-			c.Abort()
+		authHeader := c.GetHeader("Authorization")
+		if authHeader == "" {
+			unauthorized(c, "missing Authorization header")
 			return
 		}
 
-		tokenString := token[1]
+		tokenParts := strings.Split(authHeader, " ")
+		if len(tokenParts) != 2 || tokenParts[0] != "Bearer" {
+			unauthorized(c, "Invalid Authorization header format")
+			return
+		}
 
-		email, err := ParseToken(tokenString)
+		accessToken := tokenParts[1]
+		userId, err := ParseToken(accessToken)
 		if err != nil {
-			c.JSON(http.StatusUnauthorized, gin.H{
-				"error": "Invalid token",
-			})
-			c.Abort()
+			unauthorized(c, err.Error())
 			return
 		}
 
-		c.Header("email", email)
+		c.Header("id", userId)
 		c.Next()
 	}
 }
 
-func ParseToken(tokenString string) (string, error) {
+func ParseToken(tokenString string) (userId string, err error) {
 	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
 		return secretKey, nil
 	}, jwt.WithValidMethods([]string{jwt.SigningMethodHS256.Alg()}))
@@ -56,11 +56,17 @@ func ParseToken(tokenString string) (string, error) {
 	}
 
 	if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
-		if email, ok := claims["email"].(string); ok {
-			return email, nil
+		if userId, ok := claims["id"].(string); ok {
+			return userId, nil
 		}
-		return "", errors.New("email not found in token")
+		return "", errors.New("id not found in token")
 	}
 
 	return "", errors.New("invalid token claims")
+}
+
+func unauthorized(c *gin.Context, msg string) {
+	c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{
+		"error": msg,
+	})
 }

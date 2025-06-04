@@ -23,8 +23,38 @@ message CreateUserRequest {
 
 message CreateUserResponse {}
 
+message UserPosition {
+  float lon = 1;
+  float lat = 2;
+  int32 radius = 3;
+}
+
+message Preferences {
+  string id = 1;
+  string user_id = 2;
+  string preferredGender = 3;
+  int32 ageMin = 4;
+  int32 ageMax = 5;
+  UserPosition position = 6;
+}
+
+message SelectUsersByPreferencesRequest {
+  string userId = 1;
+  string preferredGender = 2;
+  int32 ageMin = 3;
+  int32 ageMax = 4;
+  UserPosition position = 5;
+  int32 limit = 6;
+  int32 offset = 7;
+}
+
+message SelectUsersByPreferencesResponse {
+  repeated User users = 1;
+}
+
 service user {
   rpc CreateUserFromAuth (CreateUserRequest) returns (CreateUserResponse);
+  rpc   SelectUsersByPreferences(SelectUsersByPreferencesRequest) returns (SelectUsersByPreferencesResponse);
 }
 
 message RefreshTokenRequest {
@@ -38,4 +68,23 @@ message RefreshTokenResponse {
 
 service auth {
   rpc RefreshToken (RefreshTokenRequest) returns (RefreshTokenResponse);
+}
+
+message MatchModel {
+  string fromId = 1;
+  string toId = 2;
+  bool fromDecision = 3;
+  bool toDecision = 4;
+}
+
+message GetDecisionsUserIdRequest {
+  string userId = 1;
+}
+
+message GetDecisionsUserIdResponse {
+  repeated string userIds = 1;
+}
+
+service match {
+  rpc GetDecisionsUserId (GetDecisionsUserIdRequest) returns (GetDecisionsUserIdResponse);
 }

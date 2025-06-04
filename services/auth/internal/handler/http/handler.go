@@ -6,6 +6,7 @@ import (
 	"github.com/danilkompanites/tinder-clone/services/auth/pkg/model"
 	"github.com/gin-gonic/gin"
 	"net/http"
+	"strings"
 	"time"
 )
 
@@ -39,7 +40,7 @@ func (h *Handler) RegisterHandler(c *gin.Context) {
 }
 
 func (h *Handler) LoginHandler(c *gin.Context) {
-	var req *model.LoginRequest
+	var req model.LoginRequest
 	err := c.Bind(&req)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"message": err.Error()})
@@ -50,22 +51,34 @@ func (h *Handler) LoginHandler(c *gin.Context) {
 	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
 	defer cancel()
 
-	res, err := h.service.LoginUser(ctx, req)
+	res, err := h.service.LoginUser(ctx, &req)
 
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
 		return
 	}
-	c.JSON(http.StatusOK, res)
+
+	res.AccessToken = "Bearer " + res.AccessToken
+	res.RefreshToken = "Bearer " + res.RefreshToken
+
+	c.SetCookie("refresh_token", res.RefreshToken, 3600*24*7, "/", "", true, true)
+
+	c.JSON(http.StatusOK, gin.H{"accessToken": res.AccessToken})
 }
 
 func (h *Handler) RefreshHandler(c *gin.Context) {
-	var req model.RefreshTokenRequest
-	err := c.Bind(&req)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"message": err.Error()})
+	cookie, err := c.Cookie("refresh_token")
+	if err != nil || cookie == "" || !strings.HasPrefix(cookie, "Bearer ") {
+		c.JSON(http.StatusBadRequest, gin.H{"message": "Cookie not found"})
 		return
 	}
+
+	tokenString := cookie[7:]
+
+	req := model.RefreshTokenRequest{
+		RefreshToken: tokenString,
+	}
+
 	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
 	defer cancel()
 
@@ -75,16 +88,26 @@ func (h *Handler) RefreshHandler(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, res)
+	res.AccessToken = "Bearer " + res.AccessToken
+	res.RefreshToken = "Bearer " + res.RefreshToken
+
+	c.SetCookie("refresh_token", res.RefreshToken, 3600*24*7, "/", "", true, true)
+	c.JSON(http.StatusOK, gin.H{"accessToken": res.AccessToken})
 }
 
 func (h *Handler) LogoutHandler(c *gin.Context) {
-	var req model.LogoutRequest
-	err := c.Bind(&req)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"message": err.Error()})
+	cookie, err := c.Cookie("refresh_token")
+	if err != nil || cookie == "" || !strings.HasPrefix(cookie, "Bearer ") {
+		c.JSON(http.StatusBadRequest, gin.H{"message": "Cookie not found"})
 		return
 	}
+
+	tokenString := cookie[7:]
+
+	req := model.LogoutRequest{
+		RefreshToken: tokenString,
+	}
+
 	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
 	defer cancel()
 

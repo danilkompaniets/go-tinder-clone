@@ -15,7 +15,7 @@ services:
 
 
   usersDb:
-    image: postgres:15
+    image: postgis/postgis:15-3.3
     restart: always
     environment:
       POSTGRES_USER: myuser
@@ -25,6 +25,20 @@ services:
       - users_db_data:/var/lib/postgresql/data
     ports:
       - "5434:5432"
+    networks:
+      - backend
+      
+  matchDb:
+    image: postgres:15
+    restart: always
+    environment:
+      POSTGRES_USER: myuser
+      POSTGRES_PASSWORD: mypassword
+      POSTGRES_DB: matchdb
+    volumes:
+      - match_db_data:/var/lib/postgresql/data
+    ports:
+      - "5436:5432"
     networks:
       - backend
 
@@ -90,9 +104,11 @@ services:
       KAFKA_CLUSTERS_0_ZOOKEEPER: zookeeper:2181
     networks:
       - backend
+
 volumes:
   auth_db_data:
   users_db_data:
+  match_db_data:
 
 networks:
   backend:

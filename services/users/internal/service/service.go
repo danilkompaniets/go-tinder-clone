@@ -53,7 +53,7 @@ func (s *UserService) CreateUserPreference(ctx context.Context, req model.Create
 		PreferredGender: &req.PreferredGender,
 		AgeMax:          &req.AgeMax,
 		AgeMin:          &req.AgeMin,
-		CityOnly:        &req.CityOnly,
+		Position:        req.Position,
 	}
 
 	prefsJson, err := json.Marshal(prefs)
@@ -66,7 +66,7 @@ func (s *UserService) CreateUserPreference(ctx context.Context, req model.Create
 	return nil
 }
 
-func (s *UserService) UpdateUserPreference(ctx context.Context, req model.UpdatePreferenceRequest) error {
+func (s *UserService) UpdateUserPreference(ctx context.Context, req model.UserPreferences) error {
 	if req.ID == "" {
 		return errors.New("user id is empty")
 	}
@@ -76,7 +76,7 @@ func (s *UserService) UpdateUserPreference(ctx context.Context, req model.Update
 		PreferredGender: req.PreferredGender,
 		AgeMax:          req.AgeMax,
 		AgeMin:          req.AgeMin,
-		CityOnly:        req.CityOnly,
+		Position:        req.Position,
 	}
 
 	prefsJson, err := json.Marshal(prefs)
@@ -103,4 +103,12 @@ func (s *UserService) UpdateUser(ctx context.Context, user model.UpdateUserReque
 	}
 
 	return s.repo.UpdateUser(ctx, &user)
+}
+
+func (s *UserService) GetUsersByPreferences(ctx context.Context, req *model.GetUsersByPreferencesRequest) ([]*model.User, error) {
+	if req.UserId == "" {
+		return nil, errors.New("user id is empty")
+	}
+
+	return s.repo.SelectUsersByPreferences(ctx, req)
 }
