@@ -67,6 +67,7 @@ func (h *Handler) CreatePreference(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
+
 	if err := h.service.CreateUserPreference(c.Request.Context(), req); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return

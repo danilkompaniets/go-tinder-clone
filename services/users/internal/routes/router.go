@@ -25,7 +25,7 @@ func (r *Router) SetupRoutes() *gin.Engine {
 		users.GET("/:id", r.handler.GetUserByID)
 	}
 
-	prefs := api.Group("/preferences")
+	prefs := users.Group("/preferences")
 	{
 		prefs.POST("/", r.handler.CreatePreference)
 		prefs.PUT("/", r.handler.UpdatePreference)

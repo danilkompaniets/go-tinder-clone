@@ -14,6 +14,7 @@ func main() {
 	authUrl, err := url.Parse("http://" + cfg.Services.Auth.HttpPort + "/api/v1")
 	usersUrl, err := url.Parse("http://" + cfg.Services.Users.HttpPort + "/api/v1")
 	matchUrl, err := url.Parse("http://" + cfg.Services.Match.HttpPort + "/api/v1")
+	deckUrl, err := url.Parse("http://" + cfg.Services.Deck.HttpPort + "/api/v1")
 
 	if err != nil {
 		panic(err)
@@ -35,6 +36,12 @@ func main() {
 	match.Use(auth.JwtMiddleware())
 	match.Any("/*path", func(c *gin.Context) {
 		proxy.HandleReverseProxy(c, matchUrl, "/match")
+	})
+
+	deck := r.Group("/deck")
+	deck.Use(auth.JwtMiddleware())
+	deck.Any("/*path", func(c *gin.Context) {
+		proxy.HandleReverseProxy(c, deckUrl, "/deck")
 	})
 
 	err = r.Run(cfg.Services.ApiGateway.Addr)

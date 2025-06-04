@@ -77,7 +77,7 @@ func (repo *Repository) SelectUserByID(ctx context.Context, id string) (*model.U
 func (repo *Repository) InsertUserPreference(ctx context.Context, req model.CreatePreferenceRequest) (string, error) {
 	query := `
 		INSERT INTO users_preferences (
-			user_id, preferred_gender, age_min, age_max, city_only, position, radius
+			user_id, preferred_gender, age_min, age_max, position, radius
 		) 
 		VALUES (
 			$1, $2, $3, $4, ST_MakePoint($5, $6)::geography, $7
@@ -188,12 +188,12 @@ func (repo *Repository) UpdateUserPreference(ctx context.Context, req model.User
 		args = append(args, *req.AgeMax)
 		i++
 	}
-	if req.Position != nil && req.Position.Lat != nil && req.Position.Lon != nil && req.Position.Radius != nil {
+	if req.Position != nil {
 		query += fmt.Sprintf("position = ST_MakePoint($%d, $%d)::geography, ", i, i+1)
-		args = append(args, *req.Position.Lon, *req.Position.Lat)
+		args = append(args, req.Position.Lon, req.Position.Lat)
 		i += 2
 		query += fmt.Sprintf("radius = $%d, ", i)
-		args = append(args, *req.Position.Radius)
+		args = append(args, req.Position.Radius)
 		i++
 	}
 
