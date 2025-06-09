@@ -264,3 +264,14 @@ func (repo *Repository) SelectUsersByPreferences(ctx context.Context, req *model
 
 	return res, nil
 }
+
+func (repo *Repository) InsertUserPhotoURL(ctx context.Context, photoUrl, userId string, photoPosition int) error {
+	stmt := `INSERT INTO users_photos (user_id, url, position) VALUES ($1, $2, $3)`
+
+	_, err := repo.DB.ExecContext(ctx, stmt, userId, photoUrl, photoPosition)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}

@@ -96,3 +96,27 @@ func (h *Handler) DeletePreference(c *gin.Context) {
 	}
 	c.Status(http.StatusOK)
 }
+
+func (h *Handler) AddUserPhoto(c *gin.Context) {
+	var req model.AddUserPhotoRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	userId := c.GetHeader("id")
+
+	if userId == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "userId is required"})
+		return
+	}
+
+	res, err := h.service.AddUserPhoto(c, userId, req)
+
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err})
+		return
+	}
+
+	c.JSON(http.StatusOK, res)
+}

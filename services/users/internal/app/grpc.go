@@ -6,6 +6,7 @@ import (
 	"github.com/danilkompanites/tinder-clone/internal/config"
 	"github.com/danilkompanites/tinder-clone/internal/utils/kafka/producer"
 	grpcMiddleware "github.com/danilkompanites/tinder-clone/internal/utils/middleware/grpc"
+	"github.com/danilkompanites/tinder-clone/internal/utils/storage/s3"
 	grpc2 "github.com/danilkompanites/tinder-clone/services/users/internal/handler/grpc"
 	sqlRepo "github.com/danilkompanites/tinder-clone/services/users/internal/repository/sql"
 	"github.com/danilkompanites/tinder-clone/services/users/internal/service"
@@ -31,6 +32,7 @@ func NewGRPCApp(cfg *config.Config, db *sql.DB, publisher *producer.Publisher) *
 
 func (app *GRPCApplication) Run() error {
 	repo := sqlRepo.NewRepository(app.db)
+	s3Client := s3.NewClient(app.cfg.Services.ObjectStorage.S3)
 	srv := service.NewUserService(repo, app.cfg, app.publisher)
 	handler := grpc2.NewGRPCHandler(*srv)
 

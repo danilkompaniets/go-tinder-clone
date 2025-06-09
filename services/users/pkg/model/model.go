@@ -1,6 +1,9 @@
 package model
 
-import "time"
+import (
+	"mime/multipart"
+	"time"
+)
 
 type UpdateUserRequest struct {
 	ID        string     `json:"id"` // обязателен
@@ -59,4 +62,9 @@ type GetUsersByPreferencesRequest struct {
 
 	Limit  int `json:"limit" binding:"required"`
 	Offset int `json:"offset" binding:"required"`
+}
+
+type AddUserPhotoRequest struct {
+	Photo    *multipart.FileHeader `form:"photo" binding:"required"`
+	Position *int                  `form:"position"`
 }

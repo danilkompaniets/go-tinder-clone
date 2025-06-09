@@ -35,4 +35,9 @@ services:
   deck:
     grpcPort: "localhost9093"
     httpPort: "localhost:8084"
+  object-storage:
+    bucket: tinder-clone-danilkompaniets.s3.ru-7.storage.selcloud.ru
+    region: ru-7
+    endpoint: s3.ru-7.storage.selcloud.ru
+    useSSl: false
     

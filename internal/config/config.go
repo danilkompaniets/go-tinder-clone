@@ -14,13 +14,23 @@ type kafkaInfo struct {
 	Url []string `yaml:"url"`
 }
 
+type s3Info struct {
+	Endpoint  string `yaml:"endpoint"`
+	Region    string `yaml:"region"`
+	Bucket    string `yaml:"bucket"`
+	UseSSl    bool   `yaml:"useSSL"`
+	SecretKey string
+	AccessKey string
+}
+
 type services struct {
-	Auth       serviceInfo    `yaml:"auth"`
-	Users      serviceInfo    `yaml:"users"`
-	ApiGateway apiGatewayInfo `yaml:"api-gateway"`
-	Kafka      kafkaInfo      `yaml:"kafka"`
-	Match      serviceInfo    `yaml:"match"`
-	Deck       serviceInfo    `yaml:"deck"`
+	Auth          serviceInfo    `yaml:"auth"`
+	Users         serviceInfo    `yaml:"users"`
+	ApiGateway    apiGatewayInfo `yaml:"api-gateway"`
+	Kafka         kafkaInfo      `yaml:"kafka"`
+	Match         serviceInfo    `yaml:"match"`
+	Deck          serviceInfo    `yaml:"deck"`
+	ObjectStorage s3Info         `yaml:"object-storage"`
 }
 
 type apiGatewayInfo struct {
@@ -42,10 +52,13 @@ type databaseInfo struct {
 }
 
 func MustLoad() *Config {
+	s3AccessKey := os.Getenv("S3_ACCESS_KEY_ID")
+	s3SecretKey := os.Getenv("S3_SECRET_KEY")
+
 	cfgPath := os.Getenv("CONFIG_PATH")
 
-	if cfgPath == "" {
-		panic("CONFIG_PATH environment variable not set")
+	if cfgPath == "" || s3AccessKey == "" || s3SecretKey == "" {
+		panic("some environment variables are not set: CONFIG_PATH, S3_ACCESS_KEY_ID, S3_SECRET_KEY")
 	}
 
 	file, err := os.ReadFile(cfgPath)
@@ -59,6 +72,9 @@ func MustLoad() *Config {
 	if err != nil {
 		panic(err)
 	}
+	
+	cfg.Services.ObjectStorage.SecretKey = s3SecretKey
+	cfg.Services.ObjectStorage.AccessKey = s3AccessKey
 
 	fmt.Println(cfg)
 

@@ -7,14 +7,17 @@ import (
 	"github.com/danilkompanites/tinder-clone/internal/config"
 	"github.com/danilkompanites/tinder-clone/internal/utils/kafka"
 	"github.com/danilkompanites/tinder-clone/internal/utils/kafka/producer"
+	"github.com/danilkompanites/tinder-clone/internal/utils/storage/s3"
 	"github.com/danilkompanites/tinder-clone/services/users/internal/repository/sql"
 	"github.com/danilkompanites/tinder-clone/services/users/pkg/model"
+	"github.com/minio/minio-go/v7"
 )
 
 type UserService struct {
 	cfg       *config.Config
 	repo      *sql.Repository
 	publisher *producer.Publisher
+	s3Client  *s3.Client
 }
 
 func NewUserService(repo *sql.Repository, cfg *config.Config, publisher *producer.Publisher) *UserService {
@@ -24,6 +27,34 @@ func NewUserService(repo *sql.Repository, cfg *config.Config, publisher *produce
 		publisher: publisher,
 	}
 }
+
+func (s *UserService) AddUserPhoto(ctx context.Context, userId string, req model.AddUserPhotoRequest) (string, error) {
+	if req.Photo == nil {
+		return "", errors.New("photo is required")
+	}
+	photo := req.Photo
+	buffer, err := photo.Open()
+	if err != nil {
+		return "", err
+	}
+
+	info, err := s.s3Client.PutObject(ctx, s.cfg.Services.ObjectStorage.S3, photo.Filename, buffer, photo.Size, minio.PutObjectOptions{
+		ContentType: photo.Header.Get("Content-Type"),
+	})
+
+	if err != nil {
+		return "", err
+	}
+
+	err = s.repo.InsertUserPhotoURL(ctx, info.Location, userId, *req.Position)
+
+	if err != nil {
+		return "", err
+	}
+
+	return info.Location, nil
+}
+
 func (s *UserService) CreateUser(ctx context.Context, user model.User) error {
 	if user.ID == "" || user.Email == "" || user.Username == "" {
 		return errors.New("missing required user fields")

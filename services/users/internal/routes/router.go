@@ -32,5 +32,8 @@ func (r *Router) SetupRoutes() *gin.Engine {
 		prefs.DELETE("/:id", r.handler.DeletePreference)
 	}
 
+	photos := users.Group("/photos")
+	photos.POST("/", r.handler.AddUserPhoto)
+
 	return router
 }
